@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حافظي - إدارة بيانات العملاء</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success-color: #16a34a;
+            --success-hover: #15803d;
+            --danger-color: #dc2626;
+            --danger-hover: #b91c1c;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Naskh Arabic', serif;
+            direction: rtl;
+            background-color: var(--gray-50);
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(to right, #2563eb, #1d4ed8);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .header-content {
+            max-width: 48rem;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 4rem 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            color: var(--primary-color);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        @media (min-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.375rem;
+            font-family: inherit;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--success-color);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--success-hover);
+        }
+
+        /* Files List */
+        .files-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 0.375rem;
+        }
+
+        .file-info h4 {
+            margin-bottom: 0.25rem;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .download-btn {
+            color: var(--primary-color);
+        }
+
+        .delete-btn {
+            color: var(--danger-color);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            color: white;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .toast-success {
+            background-color: var(--success-color);
+        }
+
+        .toast-error {
+            background-color: var(--danger-color);
+        }
+
+        /* Receipt Template */
+        .receipt-template {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .receipt {
+            width: 800px;
+            background: white;
+            padding: 3rem;
+            font-family: 'Noto Naskh Arabic', serif;
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .receipt-header .brand-name {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .receipt-header h2 {
+            font-size: 1.75rem;
+            color: var(--gray-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .receipt-header .date {
+            color: var(--gray-600);
+            font-size: 1rem;
+        }
+
+        .receipt-content {
+            margin: 2rem 0;
+        }
+
+        .receipt-section {
+            background-color: var(--gray-50);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .receipt-section h3 {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .receipt-section p {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            margin-bottom: 0.75rem;
+            align-items: center;
+        }
+
+        .receipt-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .receipt-section .label {
+            color: var(--gray-600);
+            font-weight: 600;
+        }
+
+        .receipt-section .value {
+            color: var(--gray-800);
+        }
+
+        .receipt-section .price {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e5e7eb;
+            color: var(--gray-600);
+        }
+
+        .receipt-footer p {
+            margin: 0.25rem 0;
+            font-size: 0.9rem;
+        }
+
+        .receipt-footer .logo {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -1rem); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translate(-50%, 0); }
+            to { opacity: 0; transform: translate(-50%, 1rem); }
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(to right, #2563eb, #1d4ed8);
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+            border-radius: 1rem;
+            margin: 4rem 0;
+        }
+
+        .cta-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: white;
+            color: var(--primary-color);
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .cta-button:hover {
+            background-color: var(--gray-100);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <h1>حافظي</h1>
+                <p>نظام متكامل لإدارة بيانات العملاء</p>
+                <p>حل مبتكر يساعدك في تنظيم وإدارة معلومات عملائك بكفاءة عالية وأمان تام</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Features -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>منصة متكاملة</h3>
+                <p>إدارة جميع بيانات عملائك في مكان واحد بكل سهولة وأمان</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👥</div>
+                <h3>سهولة الاستخدام</h3>
+                <p>واجهة مستخدم بسيطة وسلسة تناسب جميع المستخدمين</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Customer Form -->
+            <div class="card">
+                <h2>إدخال بيانات العميل</h2>
+                <form id="customerForm">
+                    <div class="form-group">
+                        <label>العلامة التجارية</label>
+                        <input type="text" name="brandName" placeholder="اسم العلامة التجارية الخاصة بك">
+                    </div>
+                    <div class="form-group">
+                        <label>الاسم الكامل <span class="required">*</span></label>
+                        <input type="text" name="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>البريد الإلكتروني</label>
+                        <input type="email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label>رقم الهاتف</label>
+                        <input type="tel" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label>العنوان</label>
+                        <textarea name="address" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>الخدمة</label>
+                        <select name="service" id="service"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>تفاصيل أكثر</label>
+                        <textarea name="serviceDetails" rows="3" placeholder="أضف تفاصيل إضافية عن الخدمة المطلوبة"></textarea>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>السعر</label>
+                            <input type="number" name="price">
+                        </div>
+                        <div class="form-group">
+                            <label>العملة</label>
+                            <select name="currency" id="currency"></select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">حفظ البيانات</button>
+                </form>
+            </div>
+
+            <!-- Saved Files -->
+            <div class="card">
+                <h2>الملفات المحفوظة</h2>
+                <div id="savedFiles" class="files-list"></div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <h2>هل تحتاج إلى موقع إلكتروني احترافي؟</h2>
+            <p>نقدم خدمات تصميم وتطوير المواقع الإلكترونية بأحدث التقنيات وأفضل المعايير العالمية</p>
+            <a href="https://youssefaouich.com" target="_blank" rel="noopener noreferrer" class="cta-button">
+                تواصل معنا الآن
+            </a>
+        </div>
+    </main>
+
+    <!-- Receipt Template -->
+    <div id="receiptTemplate" class="receipt-template">
+        <div id="receipt" class="receipt">
+            <div class="receipt-header">
+                <div id="receiptBrandName" class="brand-name"></div>
+                <h2>فاتورة العميل / Customer Receipt</h2>
+                <div id="receiptDate" class="date"></div>
+            </div>
+            
+            <div class="receipt-content">
+                <div class="receipt-section">
+                    <h3>معلومات العميل / Customer Information</h3>
+                    <p>
+                        <span class="label">الاسم / Name:</span>
+                        <span id="receiptName" class="value"></span>
+                    </p>
+                    <p>
+                        <span class="label">الهاتف / Phone:</span>
+                        <span id="receiptPhone" class="value"></span>
+                    </p>
+                    <p>
+                        <span class="label">البريد الإلكتروني / Email:</span>
+                        <span id="receiptEmail" class="value"></span>
+                    </p>
+                    <p>
+                        <span class="label">العنوان / Address:</span>
+                        <span id="receiptAddress" class="value"></span>
+                    </p>
+                </div>
+                
+                <div class="receipt-section">
+                    <h3>تفاصيل الخدمة / Service Details</h3>
+                    <p>
+                        <span class="label">الخدمة / Service:</span>
+                        <span id="receiptService" class="value"></span>
+                    </p>
+                    <p>
+                        <span class="label">تفاصيل/Details:</span>
+                        <span id="receiptServiceDetails" class="value"></span>
+                    </p>
+                    <p>
+                        <span class="label">السعر / Price:</span>
+                        <span id="receiptPrice" class="value price"></span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="receipt-footer">
+                <p class="logo">حافظي</p>
+                <p>نظام إدارة العملاء / Customer Management System</p>
+                <p id="currentYear"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        // Data
+        const services = [
+            'خدمة استشارية',
+            'تطوير مواقع',
+            'تصميم جرافيك',
+            'تسويق رقمي',
+            'إدارة وسائل التواصل',
+        ];
+
+        const currencies = [
+            { code: 'SAR', name: 'Saudi Riyal', symbol: 'SAR', nameAr: 'ريال سعودي', symbolAr: 'ر.س' },
+            { code: 'AED', name: 'UAE Dirham', symbol: 'AED', nameAr: 'درهم إماراتي', symbolAr: 'د.إ' },
+            { code: 'IQD', name: 'Iraqi Dinar', symbol: 'IQD', nameAr: 'دينار عراقي', symbolAr: 'د.ع' },
+            { code: 'MAD', name: 'Moroccan Dirham', symbol: 'MAD', nameAr: 'درهم مغربي', symbolAr: 'د.م' },
+            { code: 'DZD', name: 'Algerian Dinar', symbol: 'DZD', nameAr: 'دينار جزائري', symbolAr: 'د.ج' },
+            { code: 'KWD', name: 'Kuwaiti Dinar', symbol: 'KWD', nameAr: 'دينار كويتي', symbolAr: 'د.ك' },
+            { code: 'EGP', name: 'Egyptian Pound', symbol: 'EGP', nameAr: 'جنيه مصري', symbolAr: 'ج.م' },
+            { code: 'USD', name: 'US Dollar', symbol: '$', nameAr: 'دولار أمريكي', symbolAr: '$' },
+            { code: 'EUR', name: 'Euro', symbol: '€', nameAr: 'يورو', symbolAr: '€' },
+        ];
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSelects();
+            loadSavedFiles();
+        });
+
+        // Initialize select elements
+        function initializeSelects() {
+            const serviceSelect = document.getElementById('service');
+            const currencySelect = document.getElementById('currency');
+
+            // Populate services
+            services.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service;
+                option.textContent = service;
+                serviceSelect.appendChild(option);
+            });
+
+            // Populate currencies
+            currencies.forEach(currency => {
+                const option = document.createElement('option');
+                option.value = currency.code;
+                option.textContent = `${currency.nameAr} (${currency.symbolAr})`;
+                currencySelect.appendChild(option);
+            });
+        }
+
+        // Handle form submission
+        document.getElementById('customerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+                id: Date.now().toString(),
+                fullName: formData.get('fullName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                brandName: formData.get('brandName'),
+                service: formData.get('service'),
+                serviceDetails: formData.get('serviceDetails'),
+                price: formData.get('price'),
+                currency: currencies.find(c => c.code === formData.get('currency')),
+                date: new Date().toLocaleDateString('ar-SA')
+            };
+
+            // Save the data
+            saveFile(data);
+            
+            // Generate PDF
+            await generatePDF(data);
+            
+            // Reset form
+            e.target.reset();
+            
+            // Show success message
+            showToast('تم حفظ البيانات بنجاح');
+        });
+
+        // Save file to localStorage
+        function saveFile(data) {
+            const savedFiles = getSavedFiles();
+            savedFiles.push(data);
+            localStorage.setItem('savedFiles', JSON.stringify(savedFiles));
+            loadSavedFiles();
+        }
+
+        // Get saved files from localStorage
+        function getSavedFiles() {
+            const files = localStorage.getItem('savedFiles');
+            return files ? JSON.parse(files) : [];
+        }
+
+        // Load and display saved files
+        function loadSavedFiles() {
+            const savedFiles = getSavedFiles();
+            const container = document.getElementById('savedFiles');
+            
+            if (savedFiles.length === 0) {
+                container.innerHTML = '<p class="empty-message">لا توجد ملفات محفوظة</p>';
+                return;
+            }
+            
+            container.innerHTML = savedFiles.map(file => `
+                <div class="file-item">
+                    <div class="file-info">
+                        ${file.brandName ? `<p class="brand-name">${file.brandName}</p>` : ''}
+                        <h4>${file.fullName}</h4>
+                        <p class="meta">${file.date} - ${file.price || '-'} ${file.currency?.symbolAr || ''}</p>
+                    </div>
+                    <div class="file-actions">
+                        <button onclick="generatePDF(${JSON.stringify(file).replace(/"/g, '&quot;')})" class="action-btn download-btn">⬇️</button>
+                        <button onclick="deleteFile('${file.id}')" class="action-btn delete-btn">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Delete file
+        function deleteFile(id) {
+            const savedFiles = getSavedFiles().filter(file => file.id !== id);
+            localStorage.setItem('savedFiles', JSON.stringify(savedFiles));
+            loadSavedFiles();
+            showToast('تم حذف الملف بنجاح');
+        }
+
+        // Generate PDF
+        async function generatePDF(data) {
+            try {
+                // Update receipt template
+                document.getElementById('receiptBrandName').textContent = data.brandName || '';
+                document.getElementById('receiptDate').textContent = `${new Date().toLocaleDateString('ar-SA')} / ${new Date().toLocaleDateString('en-US')}`;
+                document.getElementById('receiptName').textContent = data.fullName;
+                document.getElementById('receiptPhone').textContent = data.phone || '-';
+                document.getElementById('receiptEmail').textContent = data.email || '-';
+                document.getElementById('receiptAddress').textContent = data.address || '-';
+                document.getElementById('receiptService').textContent = data.service;
+                document.getElementById('receiptServiceDetails').textContent = data.serviceDetails || '-';
+                document.getElementById('receiptPrice').textContent = `${data.price || '-'} ${data.currency.symbolAr} / ${data.currency.symbol}`;
+                document.getElementById('currentYear').textContent = `© ${new Date().getFullYear()}`;
+                
+                // Show receipt template
+                const receiptTemplate = document.getElementById('receiptTemplate');
+                receiptTemplate.style.display = 'block';
+                
+                const receipt = document.getElementById('receipt');
+                const canvas = await html2canvas(receipt, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const imgWidth = 210;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                pdf.save(`receipt-${data.id}.pdf`);
+                
+                receiptTemplate.style.display = 'none';
+                
+                showToast('تم إنشاء ملف PDF بنجاح');
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                showToast('حدث خطأ أثناء إنشاء ملف PDF', 'error');
+            }
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease-in-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
